@@ -8,13 +8,19 @@ use bip32::secp256k1::ecdsa::{
     VerifyingKey
 };
 
+// Derives a child private key based on a given index, between 0 - 2^(32)-1. 
 fn derive_child_private_key(parent_xprv :ExtendedPrivateKey<SigningKey>, index: u32) -> ExtendedPrivateKey<SigningKey>{
     parent_xprv.derive_child(bip32::ChildNumber(index)).unwrap()
 }
-
+// Derives a child public key based on a given index, between 0 - 2^(32)-1. 
 fn derive_child_public_key(parent_xpub :ExtendedPublicKey<VerifyingKey>, index: u32) -> ExtendedPublicKey<VerifyingKey>{
     parent_xpub.derive_child(bip32::ChildNumber(index)).unwrap()
 }
+
+// Question: we can also expose functions that derives keys from given string path too
+
+// We would assume that the master Xprivate key will created in the keymanager and will be simply passed to these precompiles 
+
 
 fn main() {
 
@@ -42,6 +48,7 @@ let child_xpub = child_xprv.public_key();
 let child_xprv_str = child_xprv.to_string(Prefix::XPRV);
 assert!(child_xprv_str.starts_with("xprv"));
 
+// testing the private and public key derivation functions 
 let new_child_priv = derive_child_private_key(child_xprv.clone(), 1);
 let new_child_pub = new_child_priv.public_key();
 let new_derived_child_pub = derive_child_public_key(child_xpub.clone(), 1);
