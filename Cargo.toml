@@ -1,0 +1,8 @@
+[package]
+name = "bip32"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand_core = { version = "0.6", features = ["std"] }
+bip32 = "0.5.1"
