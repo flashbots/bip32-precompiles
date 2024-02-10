@@ -142,7 +142,7 @@ assert_eq!("xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWm
 assert_eq!("xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
 
 
-// Test Vector 2 source: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+// Test Vector 2
  let seed = hex_to_decimal_bytewise("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
 let main_xpriv =  XPrv::new(&seed).unwrap();
 assert_eq!(main_xpriv, XPrv::derive_from_path(&seed, &"m".parse().unwrap()).unwrap());
@@ -189,4 +189,53 @@ let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()
 assert_eq!("xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j", child_xprv.to_string(Prefix::XPRV).as_str());
 assert_eq!("xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
 
+
+// Test Vector 3
+let seed = hex_to_decimal_bytewise("4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be");
+let main_xpriv =  XPrv::new(&seed).unwrap();
+assert_eq!(main_xpriv, XPrv::derive_from_path(&seed, &"m".parse().unwrap()).unwrap());
+
+let master_path = "m";
+let master_priv = XPrv::derive_from_path(&seed, &master_path.parse()
+.unwrap())
+.unwrap();
+assert_eq!("xprv9s21ZrQH143K25QhxbucbDDuQ4naNntJRi4KUfWT7xo4EKsHt2QJDu7KXp1A3u7Bi1j8ph3EGsZ9Xvz9dGuVrtHHs7pXeTzjuxBrCmmhgC6", master_priv.to_string(Prefix::XPRV).as_str());
+assert_eq!("xpub661MyMwAqRbcEZVB4dScxMAdx6d4nFc9nvyvH3v4gJL378CSRZiYmhRoP7mBy6gSPSCYk6SzXPTf3ND1cZAceL7SfJ1Z3GC8vBgp2epUt13", master_priv.public_key().to_string(Prefix::XPUB).as_str());
+
+let child_path = "m/0'";
+let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()
+.unwrap())
+.unwrap();
+assert_eq!("xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L", child_xprv.to_string(Prefix::XPRV).as_str());
+assert_eq!("xpub68NZiKmJWnxxS6aaHmn81bvJeTESw724CRDs6HbuccFQN9Ku14VQrADWgqbhhTHBaohPX4CjNLf9fq9MYo6oDaPPLPxSb7gwQN3ih19Zm4Y", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
+
+
+// Test Vector 4
+let seed = hex_to_decimal_bytewise("3ddd5602285899a946114506157c7997e5444528f3003f6134712147db19b678");
+let main_xpriv =  XPrv::new(&seed).unwrap();
+assert_eq!(main_xpriv, XPrv::derive_from_path(&seed, &"m".parse().unwrap()).unwrap());
+
+let master_path = "m";
+let master_priv = XPrv::derive_from_path(&seed, &master_path.parse()
+.unwrap())
+.unwrap();
+assert_eq!("xprv9s21ZrQH143K48vGoLGRPxgo2JNkJ3J3fqkirQC2zVdk5Dgd5w14S7fRDyHH4dWNHUgkvsvNDCkvAwcSHNAQwhwgNMgZhLtQC63zxwhQmRv", master_priv.to_string(Prefix::XPRV).as_str());
+assert_eq!("xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa", master_priv.public_key().to_string(Prefix::XPUB).as_str());
+
+let child_path = "m/0'";
+let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()
+.unwrap())
+.unwrap();
+assert_eq!("xprv9vB7xEWwNp9kh1wQRfCCQMnZUEG21LpbR9NPCNN1dwhiZkjjeGRnaALmPXCX7SgjFTiCTT6bXes17boXtjq3xLpcDjzEuGLQBM5ohqkao9G", child_xprv.to_string(Prefix::XPRV).as_str());
+assert_eq!("xpub69AUMk3qDBi3uW1sXgjCmVjJ2G6WQoYSnNHyzkmdCHEhSZ4tBok37xfFEqHd2AddP56Tqp4o56AePAgCjYdvpW2PU2jbUPFKsav5ut6Ch1m", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
+
+let child_path = "m/0'/1'";
+let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()
+.unwrap())
+.unwrap();
+assert_eq!("xprv9xJocDuwtYCMNAo3Zw76WENQeAS6WGXQ55RCy7tDJ8oALr4FWkuVoHJeHVAcAqiZLE7Je3vZJHxspZdFHfnBEjHqU5hG1Jaj32dVoS6XLT1", child_xprv.to_string(Prefix::XPRV).as_str());
+assert_eq!("xpub6BJA1jSqiukeaesWfxe6sNK9CCGaujFFSJLomWHprUL9DePQ4JDkM5d88n49sMGJxrhpjazuXYWdMf17C9T5XnxkopaeS7jGk1GyyVziaMt", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
+
+
+// TODO: Test Vector 5
 }
