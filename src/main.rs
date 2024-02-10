@@ -1,4 +1,4 @@
-use bip32::{ExtendedPrivateKey, ExtendedPublicKey, Mnemonic, Prefix, XPrv};
+use bip32::{ExtendedPrivateKey, ExtendedPublicKey, Mnemonic, Prefix, XPrv, XPub};
 use rand_core::OsRng;
 use bip32::secp256k1::ecdsa::{
     signature::{Signer, Verifier},
@@ -237,5 +237,6 @@ assert_eq!("xprv9xJocDuwtYCMNAo3Zw76WENQeAS6WGXQ55RCy7tDJ8oALr4FWkuVoHJeHVAcAqiZ
 assert_eq!("xpub6BJA1jSqiukeaesWfxe6sNK9CCGaujFFSJLomWHprUL9DePQ4JDkM5d88n49sMGJxrhpjazuXYWdMf17C9T5XnxkopaeS7jGk1GyyVziaMt", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
 
 
-// TODO: Test Vector 5
+// TODO: Figure out a way to include the tests in Test Vector 5
+//let pubkey = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6Q5JXayek4PRsn35jii4veMimro1xefsM58PgBMrvdYre8QyULY").unwrap();
 }
