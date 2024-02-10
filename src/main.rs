@@ -1,4 +1,3 @@
-
 use bip32::{ExtendedPrivateKey, ExtendedPublicKey, Mnemonic, Prefix, XPrv};
 use rand_core::OsRng;
 use bip32::secp256k1::ecdsa::{
@@ -7,6 +6,29 @@ use bip32::secp256k1::ecdsa::{
     SigningKey,
     VerifyingKey
 };
+
+fn hex_to_decimal_bytewise(hex_string: &str) -> Vec<u8> {
+    let mut decimal_values = Vec::new();
+
+    for hex_byte in hex_string.as_bytes().chunks(2) {
+        let hex_str = if hex_byte.len() == 1 {
+            // Handle odd-length hex strings by padding with a leading zero
+            format!("0{}", char::from(hex_byte[0]))
+        } else {
+            format!("{}{}", char::from(hex_byte[0]), char::from(hex_byte[1]))
+        };
+
+        if let Ok(decimal_value) = u8::from_str_radix(&hex_str, 16) {
+            decimal_values.push(decimal_value);
+        } else {
+            // Handle invalid hex characters
+            panic!("Invalid hex character: {}", hex_str);
+        }
+    }
+
+    decimal_values
+}
+
 
 // Derives a child private key based on a given index, between 0 - 2^(32)-1. 
 fn derive_child_private_key(parent_xprv :ExtendedPrivateKey<SigningKey>, index: u32) -> ExtendedPrivateKey<SigningKey>{
@@ -72,7 +94,8 @@ assert!(verification_key.verify(example_msg, &signature).is_ok());
 
 
 // Test Vector 1 source: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-let seed = String::from_utf8(hex::decode("000102030405060708090a0b0c0d0e0f").unwrap()).unwrap();
+//let seed = String::from_utf8(hex::decode("000102030405060708090a0b0c0d0e0f").unwrap()).unwrap();
+let seed = hex_to_decimal_bytewise("000102030405060708090a0b0c0d0e0f");
 let main_xpriv =  XPrv::new(&seed).unwrap();
 assert_eq!(main_xpriv, XPrv::derive_from_path(&seed, &"m".parse().unwrap()).unwrap());
 
@@ -120,10 +143,7 @@ assert_eq!("xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2U
 
 
 // Test Vector 2 source: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-
-// it doesnt seem to be able to accept seeds with large lengthes 
-/* 
-let seed = String::from_utf8(hex::decode("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542").unwrap()).unwrap();
+ let seed = hex_to_decimal_bytewise("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
 let main_xpriv =  XPrv::new(&seed).unwrap();
 assert_eq!(main_xpriv, XPrv::derive_from_path(&seed, &"m".parse().unwrap()).unwrap());
 
@@ -168,7 +188,5 @@ let child_xprv = XPrv::derive_from_path(&seed, &child_path.parse()
 .unwrap();
 assert_eq!("xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j", child_xprv.to_string(Prefix::XPRV).as_str());
 assert_eq!("xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
-
-*/
 
 }
