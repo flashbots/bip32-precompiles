@@ -1,4 +1,6 @@
-use bip32::{ExtendedPrivateKey, ExtendedPublicKey, Mnemonic, Prefix, XPrv, XPub};
+use std::str::FromStr;
+
+use bip32::{ChildNumber, Error, ExtendedPrivateKey, ExtendedPublicKey, Mnemonic, Prefix, XPrv, XPub};
 use rand_core::OsRng;
 use bip32::secp256k1::ecdsa::{
     signature::{Signer, Verifier},
@@ -237,6 +239,78 @@ assert_eq!("xprv9xJocDuwtYCMNAo3Zw76WENQeAS6WGXQ55RCy7tDJ8oALr4FWkuVoHJeHVAcAqiZ
 assert_eq!("xpub6BJA1jSqiukeaesWfxe6sNK9CCGaujFFSJLomWHprUL9DePQ4JDkM5d88n49sMGJxrhpjazuXYWdMf17C9T5XnxkopaeS7jGk1GyyVziaMt", child_xprv.public_key().to_string(Prefix::XPUB).as_str());
 
 
-// TODO: Figure out a way to include the tests in Test Vector 5
-//let pubkey = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6Q5JXayek4PRsn35jii4veMimro1xefsM58PgBMrvdYre8QyULY").unwrap();
+// Test Vector 5
+
+//(pubkey version / prvkey mismatch)
+let invalid_pubkey: Error = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6LBpB85b3D2yc8sfvZU521AAwdZafEz7mnzBBsz4wKY5fTtTQBm").unwrap_err();
+assert_eq!(invalid_pubkey, Error::Crypto);
+
+// (prvkey version / pubkey mismatch)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K24Mfq5zL5MhWK9hUhhGbd45hLXo2Pq2oqzMMo63oStZzFGTQQD3dC4H2D5GBj7vWvSQaaBv5cxi9gafk7NF3pnBju6dwKvH").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Crypto);
+
+// (invalid pubkey prefix 04)
+let invalid_pubkey = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6Txnt3siSujt9RCVYsx4qHZGc62TG4McvMGcAUjeuwZdduYEvFn").unwrap_err();
+assert_eq!(invalid_pubkey, Error::Crypto);
+
+// (invalid prvkey prefix 04)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K24Mfq5zL5MhWK9hUhhGbd45hLXo2Pq2oqzMMo63oStZzFGpWnsj83BHtEy5Zt8CcDr1UiRXuWCmTQLxEK9vbz5gPstX92JQ").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Crypto);
+
+// (invalid pubkey prefix 01)
+let invalid_pubkey = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6N8ZMMXctdiCjxTNq964yKkwrkBJJwpzZS4HS2fxvyYUA4q2Xe4").unwrap_err();
+assert_eq!(invalid_pubkey, Error::Crypto);
+
+// (invalid prvkey prefix 01)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K24Mfq5zL5MhWK9hUhhGbd45hLXo2Pq2oqzMMo63oStZzFAzHGBP2UuGCqWLTAPLcMtD9y5gkZ6Eq3Rjuahrv17fEQ3Qen6J").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Crypto);
+
+// (zero depth with non-zero parent fingerprint)
+let invalid_prvkey = XPrv::from_str("xprv9s2SPatNQ9Vc6GTbVMFPFo7jsaZySyzk7L8n2uqKXJen3KUmvQNTuLh3fhZMBoG3G4ZW1N2kZuHEPY53qmbZzCHshoQnNf4GvELZfqTUrcv").unwrap();
+assert!(invalid_prvkey.attrs().parent_fingerprint.iter().max().unwrap() != &0);
+assert_eq!(invalid_prvkey.attrs().depth,0);
+
+// (zero depth with non-zero parent fingerprint)
+let invalid_pubkey = XPub::from_str("xpub661no6RGEX3uJkY4bNnPcw4URcQTrSibUZ4NqJEw5eBkv7ovTwgiT91XX27VbEXGENhYRCf7hyEbWrR3FewATdCEebj6znwMfQkhRYHRLpJ").unwrap();
+assert!(invalid_pubkey.attrs().parent_fingerprint.iter().max().unwrap() != &0);
+assert_eq!(invalid_pubkey.attrs().depth,0);
+
+// (zero depth with non-zero index)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH4r4TsiLvyLXqM9P7k1K3EYhA1kkD6xuquB5i39AU8KF42acDyL3qsDbU9NmZn6MsGSUYZEsuoePmjzsB3eFKSUEh3Gu1N3cqVUN").unwrap();
+assert_eq!(invalid_prvkey.attrs().depth,0);
+assert_ne!(invalid_prvkey.attrs().child_number, ChildNumber::from(0));
+
+// (zero depth with non-zero index)
+let invalid_pubkey = XPub::from_str("xpub661MyMwAuDcm6CRQ5N4qiHKrJ39Xe1R1NyfouMKTTWcguwVcfrZJaNvhpebzGerh7gucBvzEQWRugZDuDXjNDRmXzSZe4c7mnTK97pTvGS8").unwrap();
+assert_eq!(invalid_pubkey.attrs().depth, 0);
+assert_ne!(invalid_pubkey.attrs().child_number, ChildNumber::from(0));
+
+// (unknown extended key version)
+let invalid_key = XPub::from_str("DMwo58pR1QLEFihHiXPVykYB6fJmsTeHvyTp7hRThAtCX8CvYzgPcn8XnmdfHGMQzT7ayAmfo4z3gY5KfbrZWZ6St24UVf2Qgo6oujFktLHdHY4").unwrap_err();
+assert_eq!(invalid_key, Error::Crypto);
+let invalid_key = XPrv::from_str("DMwo58pR1QLEFihHiXPVykYB6fJmsTeHvyTp7hRThAtCX8CvYzgPcn8XnmdfHGMQzT7ayAmfo4z3gY5KfbrZWZ6St24UVf2Qgo6oujFktLHdHY4").unwrap_err();
+assert_eq!(invalid_key, Error::Crypto);
+
+// (unknown extended key version)
+let invalid_key = XPub::from_str("DMwo58pR1QLEFihHiXPVykYB6fJmsTeHvyTp7hRThAtCX8CvYzgPcn8XnmdfHPmHJiEDXkTiJTVV9rHEBUem2mwVbbNfvT2MTcAqj3nesx8uBf9").unwrap_err();
+assert_eq!(invalid_key, Error::Crypto);
+let invalid_key = XPrv::from_str("DMwo58pR1QLEFihHiXPVykYB6fJmsTeHvyTp7hRThAtCX8CvYzgPcn8XnmdfHPmHJiEDXkTiJTVV9rHEBUem2mwVbbNfvT2MTcAqj3nesx8uBf9").unwrap_err();
+assert_eq!(invalid_key, Error::Crypto);
+
+
+// private key 0 not in 1..n-1)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K24Mfq5zL5MhWK9hUhhGbd45hLXo2Pq2oqzMMo63oStZzF93Y5wvzdUayhgkkFoicQZcP3y52uPPxFnfoLZB21Teqt1VvEHx").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Crypto);
+
+// private key 0 not in 1..n-1)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K24Mfq5zL5MhWK9hUhhGbd45hLXo2Pq2oqzMMo63oStZzFAzHGBP2UuGCqWLTAPLcMtD5SDKr24z3aiUvKr9bJpdrcLg1y3G").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Crypto);
+
+// (invalid pubkey 020000000000000000000000000000000000000000000000000000000000000007)
+let invalid_pubkey = XPub::from_str("xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6Q5JXayek4PRsn35jii4veMimro1xefsM58PgBMrvdYre8QyULY").unwrap_err();
+assert_eq!(invalid_pubkey, Error::Crypto);
+
+// (invalid checksum)
+let invalid_prvkey = XPrv::from_str("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHL").unwrap_err();
+assert_eq!(invalid_prvkey, Error::Base58);
 }
